@@ -1,3 +1,6 @@
+from colors import WHITE
+from grid import Grid
+
 import pygame as pg
 import sys
 import math
@@ -5,18 +8,18 @@ import math
 class Application():
     
     def __init__(self, window_title="A* Visualization", width=1280, height=720, FPS=60):
+        pg.init()
+        self.window = pg.display.set_mode((width, height))
+        pg.display.set_caption(window_title)
         self.width = width
         self.height = height
         self.is_running = True
         self.show_fps = True
-
-        pg.init()
-        self.window = pg.display.set_mode((width, height))
-        pg.display.set_caption(window_title)
-
         self.font = pg.font.Font(None, 25)
         self.clock = pg.time.Clock()
         self.FPS = FPS
+
+        self.grid = Grid(width, height)
 
     def handle_events(self):
         for event in pg.event.get():
@@ -31,12 +34,14 @@ class Application():
                     self.show_fps = not self.show_fps
 
     def draw(self):
-        self.window.fill((255, 255, 255))
+        self.window.fill(WHITE)
 
         if self.show_fps:
             fps = str(int(self.clock.get_fps()))
             fps_text = self.font.render(fps, True, pg.Color('black'))
             self.window.blit(fps_text, (10, 10))
+
+        self.grid.draw_grid(self.window, self.width, self.height)
 
         pg.display.update()
         self.clock.tick(self.FPS)
