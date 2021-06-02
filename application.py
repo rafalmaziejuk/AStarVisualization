@@ -26,12 +26,22 @@ class Application():
             if event.type == pg.QUIT:
                 self.is_running = False
 
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.grid.place_cell(event.pos)
+
+                if event.button == 3:
+                    self.grid.delete_cell(event.pos)
+
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.is_running = False
 
                 if event.key == pg.K_f:
                     self.show_fps = not self.show_fps
+
+                if event.key == pg.K_r:
+                    self.grid.reset()
 
     def draw(self):
         self.window.fill(WHITE)
