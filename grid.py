@@ -2,33 +2,50 @@ from colors import *
 
 import pygame as pg
 
+CELL_SIZE = 20
+
 class Grid():
     def __init__(self, width, height):
-        self.cell_size = 20
-        self.width_count = width // self.cell_size
-        self.height_count = height // self.cell_size
+        self.width_count = width // CELL_SIZE
+        self.height_count = height // CELL_SIZE
 
         self.placing_mode = 0
+        self.nodes = [[0 for x in range(self.width_count)] for y in range(self.height_count)]
         self.start = ()
         self.end = ()
-        self.wall = []
+
+    def is_empty(self):
+        return not (self.start and self.end)
 
     def draw_grid(self, window, width, height):
-        for i in range(self.height_count):
-            pg.draw.line(window, BLACK, (0, i * self.cell_size), (width, i * self.cell_size))
-
-        for j in range(self.width_count):
-            pg.draw.line(window, BLACK, (j * self.cell_size, 0), (j * self.cell_size, height))
-
         if self.start:
-            pg.draw.rect(window, GREEN, (self.cell_size * self.start[0], self.cell_size * self.start[1], self.cell_size, self.cell_size))
+            pg.draw.rect(window, GREEN, (CELL_SIZE * self.start[0], CELL_SIZE * self.start[1], CELL_SIZE, CELL_SIZE))
 
         if self.end:
-            pg.draw.rect(window, RED, (self.cell_size * self.end[0], self.cell_size * self.end[1], self.cell_size, self.cell_size))
+            pg.draw.rect(window, RED, (CELL_SIZE * self.end[0], CELL_SIZE * self.end[1], CELL_SIZE, CELL_SIZE))
 
-        if self.wall:
-            for cell in self.wall:
-                pg.draw.rect(window, BLACK, (self.cell_size * cell[0], self.cell_size * cell[1], self.cell_size, self.cell_size))
+        for y in range(len(self.nodes)):
+            for x in range(len(self.nodes[y])):
+                if self.nodes[y][x] != 0:
+                    color = ()
+                    if self.nodes[y][x] == 1:
+                        color = BLACK
+                    elif self.nodes[y][x] == 2:
+                        color = YELLOW
+                    elif self.nodes[y][x] == 3:
+                        color = PURPLE
+                    elif self.nodes[y][x] == 4:
+                        color = ORANGE
+
+                    pg.draw.rect(window, color, (CELL_SIZE * x, CELL_SIZE * y, CELL_SIZE, CELL_SIZE))
+
+        for i in range(self.height_count):
+            pg.draw.line(window, BLACK, (0, i * CELL_SIZE), (width, i * CELL_SIZE))
+
+        for j in range(self.width_count):
+            pg.draw.line(window, BLACK, (j * CELL_SIZE, 0), (j * CELL_SIZE, height))
+
+        pg.display.update()
 
     def calculate_placing_mode(self):
         if not self.start:
@@ -42,11 +59,14 @@ class Grid():
         self.placing_mode = 0
         self.start = ()
         self.end = ()
-        self.wall.clear()
+
+        for y in range(len(self.nodes)):
+            for x in range(len(self.nodes[y])):
+                self.nodes[y][x] = 0
 
     def place_cell(self, mouse_position):
-        x = mouse_position[0] // self.cell_size
-        y = mouse_position[1] // self.cell_size
+        x = mouse_position[0] // CELL_SIZE
+        y = mouse_position[1] // CELL_SIZE
         self.calculate_placing_mode()
         
         if self.placing_mode == 0:
@@ -55,12 +75,12 @@ class Grid():
             if (x, y) != self.start:
                 self.end = (x, y)
         elif self.placing_mode == 2:
-            if (x, y) != self.start and (x, y) != self.end and (x, y) not in self.wall:
-                self.wall.append((x, y))
+            if (x, y) != self.start and (x, y) != self.end and self.nodes[y][x] == 0:
+                self.nodes[y][x] = 1
 
     def delete_cell(self, mouse_position):
-        x = mouse_position[0] // self.cell_size
-        y = mouse_position[1] // self.cell_size
+        x = mouse_position[0] // CELL_SIZE
+        y = mouse_position[1] // CELL_SIZE
 
         if (x, y) == self.start:
             self.start = ()
@@ -68,5 +88,5 @@ class Grid():
         if (x, y) == self.end:
             self.end = ()
 
-        if (x, y) in self.wall:
-            self.wall.remove((x, y))
+        if self.nodes[y][x] == 1:
+            self.nodes[y][x] = 0

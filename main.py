@@ -1,4 +1,8 @@
-import application
+from application import Application
 
-app = application.Application()
-app.run()
+def main():
+    app = Application()
+    app.run()
+
+if __name__ == '__main__':
+    main()

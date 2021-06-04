@@ -1,9 +1,9 @@
 from colors import WHITE
 from grid import Grid
+from astar import astar
 
 import pygame as pg
 import sys
-import math
 
 class Application():
     
@@ -14,11 +14,8 @@ class Application():
         self.width = width
         self.height = height
         self.is_running = True
-        self.show_fps = True
-        self.font = pg.font.Font(None, 25)
         self.clock = pg.time.Clock()
         self.FPS = FPS
-
         self.grid = Grid(width, height)
 
     def handle_events(self):
@@ -37,6 +34,10 @@ class Application():
                 if event.key == pg.K_ESCAPE:
                     self.is_running = False
 
+                if event.key == pg.K_SPACE:
+                    if not self.grid.is_empty():
+                        astar(lambda: self.grid.draw_grid(self.window, self.width, self.height), self.grid.nodes, self.grid.start, self.grid.end)
+
                 if event.key == pg.K_f:
                     self.show_fps = not self.show_fps
 
@@ -45,15 +46,7 @@ class Application():
 
     def draw(self):
         self.window.fill(WHITE)
-
-        if self.show_fps:
-            fps = str(int(self.clock.get_fps()))
-            fps_text = self.font.render(fps, True, pg.Color('black'))
-            self.window.blit(fps_text, (10, 10))
-
         self.grid.draw_grid(self.window, self.width, self.height)
-
-        pg.display.update()
         self.clock.tick(self.FPS)
 
     def run(self):
