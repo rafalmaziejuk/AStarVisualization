@@ -33,9 +33,9 @@ class Grid():
                     elif self.nodes[y][x] == 2:
                         color = YELLOW
                     elif self.nodes[y][x] == 3:
-                        color = PURPLE
-                    elif self.nodes[y][x] == 4:
                         color = ORANGE
+                    elif self.nodes[y][x] == 4:
+                        color = PURPLE
 
                     pg.draw.rect(window, color, (CELL_SIZE * x, CELL_SIZE * y, CELL_SIZE, CELL_SIZE))
 

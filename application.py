@@ -38,9 +38,6 @@ class Application():
                     if not self.grid.is_empty():
                         astar(lambda: self.grid.draw_grid(self.window, self.width, self.height), self.grid.nodes, self.grid.start, self.grid.end)
 
-                if event.key == pg.K_f:
-                    self.show_fps = not self.show_fps
-
                 if event.key == pg.K_r:
                     self.grid.reset()
 
