@@ -34,9 +34,13 @@ class Application():
                 if event.key == pg.K_ESCAPE:
                     self.is_running = False
 
-                if event.key == pg.K_SPACE:
+                if event.key == pg.K_m:
                     if not self.grid.is_empty():
-                        astar(lambda: self.grid.draw_grid(self.window, self.width, self.height), self.grid.nodes, self.grid.start, self.grid.end)
+                        astar(lambda: self.grid.draw_grid(self.window, self.width, self.height), self.grid.nodes, self.grid.start, self.grid.end, 0)
+
+                if event.key == pg.K_d:
+                    if not self.grid.is_empty():
+                        astar(lambda: self.grid.draw_grid(self.window, self.width, self.height), self.grid.nodes, self.grid.start, self.grid.end, 1)
 
                 if event.key == pg.K_r:
                     self.grid.reset()

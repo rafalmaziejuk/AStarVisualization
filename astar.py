@@ -1,3 +1,5 @@
+import math
+
 class Node:
     def __init__(self, position=(), parent=()):
         (self.x, self.y) = position
@@ -12,24 +14,32 @@ class Node:
     def __lt__(self, other):
          return self.f < other.f
 
-def calculate_heuristic(current, goal):
-    """Manhattan distance heuristic (4 directions of movement)."""
+def calculate_heuristic(current, goal, heuristic):
     (x1, y1) = current
     (x2, y2) = goal
 
-    return abs(x1 - x2) + abs(y1 - y2)
+    # Manhattan distance heuristic (4 directions of movement)
+    if heuristic == 0:
+        return abs(x1 - x2) + abs(y1 - y2)
+    # Diagonal distance heuristic (8 directions of movement)
+    else:
+        dx = abs(x1 - x2)
+        dy = abs(y1 - y2)
+        D = 1
+        D2 = math.sqrt(2)
+        
+        return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
 
 def reconstruct_path(draw, grid, start, current):
     while current != start:
         current = current.parent
         
         # the shortest path nodes (PURPLE)
-        if current != start:
-            grid[current.y][current.x] = 4
-
+        grid[current.y][current.x] = 4
+        
         draw()
 
-def astar(draw, grid, start_position, end_position):
+def astar(draw, grid, start_position, end_position, heuristic):
     start = Node(start_position, None)
     end = Node(end_position, None)
     open = [start] # set of unexplored nodes adjacent to explored nodes
@@ -42,10 +52,19 @@ def astar(draw, grid, start_position, end_position):
         
         if current == end:
             reconstruct_path(draw, grid, start, current)
+            grid[start.y][start.x] = grid[current.y][current.x] = 0
             return True
 
         (x, y) = (current.x, current.y)
-        neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+        neighbors = []
+        # 4 directions of movement
+        if heuristic == 0:
+            neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+        # 8 directions of movement
+        else:
+            neighbors = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1), 
+                         (x - 1, y), (x, y), (x + 1, y),
+                         (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)]
 
         for next in neighbors:
             # check if node is within search space bounds
@@ -64,7 +83,7 @@ def astar(draw, grid, start_position, end_position):
                 continue
             
             neighbor.g = current.g + 1 # weight of every edge is 1
-            neighbor.h = calculate_heuristic((neighbor.x, neighbor.y), (end.x, end.y))
+            neighbor.h = calculate_heuristic((neighbor.x, neighbor.y), (end.x, end.y), heuristic)
             neighbor.f = neighbor.g + neighbor.h
             
             # add current node's neighbors to the open set
@@ -72,8 +91,7 @@ def astar(draw, grid, start_position, end_position):
                 open.append(neighbor)
 
                 # nodes in open set (YELLOW)
-                if neighbor != end:
-                    grid[neighbor.y][neighbor.x] = 2
+                grid[neighbor.y][neighbor.x] = 2
 
         draw()
 
